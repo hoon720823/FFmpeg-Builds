@@ -269,7 +269,8 @@ jobs:
           password: ${{ github.token }}
       - name: Build ffmpeg
         env:
-          FFMPEG_REPO: https://x-access-token:${{ secrets.FFMPEG_PAT }}@github.com/hoon720823/ffmpeg-patch.git
+          #FFMPEG_REPO: https://x-access-token:${{ secrets.FFMPEG_PAT }}@github.com/hoon720823/ffmpeg-patch.git
+          FFMPEG_REPO: https://github.com/hoon720823/ffmpeg-patch.git
           GIT_BRANCH: master
         run: |
           T="$(echo -n ${{ github.token }} | sha256sum | head -c 64)" && echo -e "::add-mask::${T}\n::stop-commands::${T}"
