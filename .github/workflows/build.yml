@@ -2,16 +2,13 @@ name: Build FFmpeg
 
 # Manual-only trigger — push / schedule 제거.
 # 빌드 시작은 Actions 탭의 'Run workflow' 버튼 (workflow_dispatch) 만 사용.
+# 빌드 성공 시 모든 OS artifact (win64/winarm64/linux64/linuxarm64) 가 자동 release publish 된다.
+# release 를 건너뛰려면 buildOnly=true 로 trigger.
 on:
   workflow_dispatch:
     inputs:
-      doRelease:
-        description: 'Publish new release'
-        type: boolean
-        default: false
-        required: false
       buildOnly:
-        description: 'Only build ffmpeg'
+        description: 'Only build ffmpeg (skip release publish)'
         type: boolean
         default: false
         required: false
@@ -283,7 +280,7 @@ jobs:
           path: artifacts/*
   publish_release:
     name: Publish release
-    if: ${{ !cancelled() && github.event.inputs.doRelease == 'true' && needs.build_ffmpeg.result == 'success' }}
+    if: ${{ !cancelled() && github.event.inputs.buildOnly != 'true' && needs.build_ffmpeg.result == 'success' }}
     needs: build_ffmpeg
     runs-on: ubuntu-latest
     steps:
