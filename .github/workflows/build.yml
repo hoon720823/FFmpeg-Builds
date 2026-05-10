@@ -278,10 +278,48 @@ jobs:
           name: ffmpeg-${{ steps.strs.outputs.artifact_slug }}
           overwrite: true
           path: artifacts/*
+  build_ffmpeg_macos:
+    name: Build ffmpeg (macOS, gpl-shared 8.1)
+    # macOS 는 docker cross-compile 불가 — macos-13 (intel) + macos-14 (Apple Silicon) native build.
+    # 기존 build_targets / build_base 에 의존하지 않음 (별 path).
+    # 실패해도 publish_release 는 4개 OS (linux/win) artifact 만으로 진행 — needs 에 추가하되 result 검증은 안 함.
+    if: ${{ github.event.inputs.buildOnly == 'true' || success() }}
+    needs: pre_check
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: macos-13, arch: amd64 }
+          - { runner: macos-14, arch: arm64 }
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Install dependencies (Homebrew)
+        run: |
+          brew update
+          brew install pkg-config nasm yasm zeromq libsrt x264 x265 \
+            libvpx opus libvorbis freetype harfbuzz fribidi libxml2 \
+            dav1d svt-av1
+      - name: Build ffmpeg (native)
+        env:
+          FFMPEG_REPO: https://x-access-token:${{ secrets.FFMPEG_PAT }}@github.com/hoon720823/ffmpeg-patch.git
+          GIT_BRANCH: master
+        run: |
+          chmod +x ./build-macos.sh
+          ./build-macos.sh ${{ matrix.arch }}
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: ffmpeg-macos-${{ matrix.arch }}-gpl-shared-8.1
+          overwrite: true
+          path: artifacts/*
   publish_release:
     name: Publish release
+    # publish 조건: build_ffmpeg (linux/win) 가 success 이면 진행. macOS 는 best-effort —
+    # 성공 시 artifact 자동 attach, 실패 시 publish 자체는 그대로 (linux/win 만).
     if: ${{ !cancelled() && github.event.inputs.buildOnly != 'true' && needs.build_ffmpeg.result == 'success' }}
-    needs: build_ffmpeg
+    needs: [build_ffmpeg, build_ffmpeg_macos]
     runs-on: ubuntu-latest
     steps:
       - name: Free Disk-Space
