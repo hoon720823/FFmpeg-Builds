@@ -298,7 +298,8 @@ jobs:
       - name: Install dependencies (Homebrew)
         run: |
           brew update
-          brew install pkg-config nasm yasm zeromq libsrt x264 x265 \
+          # Note: SRT formula in Homebrew is "srt" not "libsrt"
+          brew install pkg-config nasm yasm zeromq srt x264 x265 \
             libvpx opus libvorbis freetype harfbuzz fribidi libxml2 \
             dav1d svt-av1
       - name: Build ffmpeg (native)
