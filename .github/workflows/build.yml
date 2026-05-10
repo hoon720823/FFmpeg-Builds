@@ -289,7 +289,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { runner: macos-13, arch: amd64 }
+          # intel x86_64: macos-14-large (paid, dedicated intel pool)
+          # macos-13 (free intel) 은 deprecation 으로 runner 풀 부족 — wait 25m+
+          - { runner: macos-14-large, arch: amd64 }
           - { runner: macos-14, arch: arm64 }
     runs-on: ${{ matrix.runner }}
     steps:
