@@ -289,9 +289,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # intel x86_64: macos-14-large (paid, dedicated intel pool)
-          # macos-13 (free intel) 은 deprecation 으로 runner 풀 부족 — wait 25m+
-          - { runner: macos-14-large, arch: amd64 }
+          # macOS intel (amd64): 영구 제외. 신규 Mac 모두 Apple Silicon, 운영 환경에
+          # macOS intel agent 부재. macos-14-large 는 paid (spending limit 필요) +
+          # 운영 가치 X. 진짜 필요해지면 아래 줄 주석 해제 + GitHub spending limit
+          # 설정 (Settings → Billing & plans → Spending limit, ~$20/월).
+          # - { runner: macos-14-large, arch: amd64 }
           - { runner: macos-14, arch: arm64 }
     runs-on: ${{ matrix.runner }}
     steps:

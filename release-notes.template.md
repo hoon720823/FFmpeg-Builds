@@ -54,7 +54,6 @@ mainline ffmpeg 위에 fms 운영용 patch:
 | windows / arm64 | `*-winarm64-gpl-shared-8.1.zip` (미검증) |
 | linux / amd64 | `*-linux64-gpl-shared-8.1.tar.xz` |
 | linux / arm64 | `*-linuxarm64-gpl-shared-8.1.tar.xz` |
-| macOS / intel | `*-macos-amd64-gpl-shared-8.1.tar.xz` |
 | macOS / Apple Silicon | `*-macos-arm64-gpl-shared-8.1.tar.xz` |
 | 무결성 | `checksums.sha256` |
 
